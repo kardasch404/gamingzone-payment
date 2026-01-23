@@ -25,6 +25,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/microservices": "^11.1.12",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.1.0",
     "@prisma/client": "^7.3.0",
     "prisma": "^7.3.0",
     "reflect-metadata": "^0.2.2",
