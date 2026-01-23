@@ -96,7 +96,7 @@ export class WebhookController {
 
   private async handlePaymentSucceeded(event: Stripe.Event): Promise<void> {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    const paymentMethod = paymentIntent.charges?.data[0]?.payment_method_details;
+    const paymentMethod = (paymentIntent as any).charges?.data[0]?.payment_method_details;
 
     await this.processPaymentSuccessUseCase.execute({
       paymentIntentId: paymentIntent.id,
