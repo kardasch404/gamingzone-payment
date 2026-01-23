@@ -1,6 +1,7 @@
-import { Controller, Post, Headers, RawBodyRequest, Req } from '@nestjs/common';
+import { Controller, Post, Headers, Req, type RawBodyRequest } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StripeService } from '../../../infrastructure/external/stripe/stripe.service';
+import type { Request } from 'express';
 
 @Controller('webhooks')
 export class WebhookController {
@@ -14,8 +15,12 @@ export class WebhookController {
     @Headers('stripe-signature') signature: string,
     @Req() request: RawBodyRequest<Request>,
   ) {
-    const webhookSecret = this.configService.get('stripe.webhookSecret');
+    const webhookSecret = this.configService.get<string>('stripe.webhookSecret');
     const stripe = this.stripeService.getClient();
+
+    if (!webhookSecret || !request.rawBody) {
+      return { error: 'Invalid webhook configuration' };
+    }
 
     try {
       const event = stripe.webhooks.constructEvent(

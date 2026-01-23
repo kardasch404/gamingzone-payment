@@ -7,8 +7,12 @@ export class StripeService {
   private stripe: Stripe;
 
   constructor(private configService: ConfigService) {
-    this.stripe = new Stripe(this.configService.get('stripe.secretKey'), {
-      apiVersion: '2024-12-18.acacia',
+    const secretKey = this.configService.get<string>('stripe.secretKey');
+    if (!secretKey) {
+      throw new Error('Stripe secret key is not configured');
+    }
+    this.stripe = new Stripe(secretKey, {
+      apiVersion: '2025-12-15.clover',
     });
   }
 
