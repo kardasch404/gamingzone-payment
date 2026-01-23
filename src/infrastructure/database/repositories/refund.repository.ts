@@ -15,7 +15,7 @@ export class RefundRepository implements IRefundRepository {
         stripeRefundId: refund.stripeRefundId,
         amount: refund.amount,
         currency: refund.currency,
-        status: refund.status,
+        status: refund.status as any,
         reason: refund.reason,
         initiatedBy: refund.initiatedBy,
       },
@@ -36,7 +36,7 @@ export class RefundRepository implements IRefundRepository {
   async update(id: string, data: Partial<Refund>): Promise<Refund> {
     const updated = await this.prisma.refund.update({
       where: { id },
-      data,
+      data: data as any,
     });
     return this.toDomain(updated);
   }

@@ -17,7 +17,7 @@ export class PaymentRepository implements IPaymentRepository {
         stripeCustomerId: payment.stripeCustomerId,
         amount: payment.amount,
         currency: payment.currency,
-        status: payment.status,
+        status: payment.status as any,
         paymentMethod: payment.paymentMethod,
         lastFourDigits: payment.lastFourDigits,
         metadata: payment.metadata,
@@ -39,7 +39,7 @@ export class PaymentRepository implements IPaymentRepository {
   async update(id: string, data: Partial<Payment>): Promise<Payment> {
     const updated = await this.prisma.payment.update({
       where: { id },
-      data,
+      data: data as any,
     });
     return this.toDomain(updated);
   }
