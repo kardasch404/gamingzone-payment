@@ -11,12 +11,15 @@ export class PaymentRepository implements IPaymentRepository {
     const created = await this.prisma.payment.create({
       data: {
         id: payment.id,
+        orderId: payment.orderId,
         userId: payment.userId,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
+        stripeCustomerId: payment.stripeCustomerId,
         amount: payment.amount,
         currency: payment.currency,
-        status: payment.status,
-        stripePaymentId: payment.stripePaymentId,
-        stripeSessionId: payment.stripeSessionId,
+        status: payment.status as any,
+        paymentMethod: payment.paymentMethod,
+        lastFourDigits: payment.lastFourDigits,
         metadata: payment.metadata,
       },
     });
@@ -36,7 +39,7 @@ export class PaymentRepository implements IPaymentRepository {
   async update(id: string, data: Partial<Payment>): Promise<Payment> {
     const updated = await this.prisma.payment.update({
       where: { id },
-      data,
+      data: data as any,
     });
     return this.toDomain(updated);
   }
@@ -44,13 +47,19 @@ export class PaymentRepository implements IPaymentRepository {
   private toDomain(data: any): Payment {
     return new Payment(
       data.id,
+      data.orderId,
       data.userId,
-      data.amount,
+      data.stripePaymentIntentId,
+      data.amount.toNumber(),
       data.currency,
       data.status,
-      data.stripePaymentId,
-      data.stripeSessionId,
+      data.stripeCustomerId,
+      data.paymentMethod,
+      data.lastFourDigits,
       data.metadata,
+      data.paidAt,
+      data.failedAt,
+      data.failureReason,
       data.createdAt,
       data.updatedAt,
     );
