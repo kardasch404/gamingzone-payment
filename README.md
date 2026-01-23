@@ -1,1 +1,1 @@
-# bootstrap-ChessMind-
+# gamingzone-payment
