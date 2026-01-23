@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package payment;
+
+service PaymentService {
+  rpc GetPayment(GetPaymentRequest) returns (PaymentResponse);
+  rpc GetPaymentByOrder(GetPaymentByOrderRequest) returns (PaymentResponse);
+  rpc ValidatePayment(ValidatePaymentRequest) returns (ValidationResponse);
+}
+
+message GetPaymentRequest {
+  string paymentId = 1;
+}
+
+message GetPaymentByOrderRequest {
+  string orderId = 1;
+}
+
+message PaymentResponse {
+  string id = 1;
+  string orderId = 2;
+  string status = 3;
+  double amount = 4;
+  string currency = 5;
+  string paidAt = 6;
+}
+
+message ValidatePaymentRequest {
+  string orderId = 1;
+}
+
+message ValidationResponse {
+  bool valid = 1;
+  string status = 2;
+  string reason = 3;
+}
