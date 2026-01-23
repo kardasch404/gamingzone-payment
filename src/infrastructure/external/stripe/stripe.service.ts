@@ -146,7 +146,7 @@ export class StripeService {
         const refund = await this.stripe.refunds.create({
           payment_intent: paymentIntentId,
           amount: amount ? Math.round(amount * 100) : undefined,
-          reason: reason as Stripe.Refund.CreateParams.Reason,
+          reason: reason as any,
         });
 
         return refund;
@@ -214,7 +214,7 @@ export class StripeService {
     return (
       error instanceof Stripe.errors.StripeConnectionError ||
       error instanceof Stripe.errors.StripeAPIError ||
-      (error.statusCode >= 500 && error.statusCode < 600)
+      (error.statusCode !== undefined && error.statusCode >= 500 && error.statusCode < 600)
     );
   }
 
