@@ -46,13 +46,13 @@ export class CreateCheckoutSessionUseCase {
         },
       ],
       customerEmail: command.email,
-      successUrl: this.configService.get('stripe.successUrl'),
-      cancelUrl: this.configService.get('stripe.cancelUrl'),
+      successUrl: this.configService.get<string>('stripe.successUrl') || 'http://localhost:3001/success',
+      cancelUrl: this.configService.get<string>('stripe.cancelUrl') || 'http://localhost:3001/cancel',
     });
 
     const response = new CheckoutSessionDTO(
       session.id,
-      session.url,
+      session.url || '',
       payment.id,
     );
 
