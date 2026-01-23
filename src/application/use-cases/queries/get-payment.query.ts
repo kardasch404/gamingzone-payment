@@ -9,13 +9,13 @@ export interface GetPaymentQuery {
 @Injectable()
 export class GetPaymentQueryHandler {
   async execute(query: GetPaymentQuery): Promise<PaymentDTO | null> {
-    // const payment = await this.paymentRepo.findById(query.paymentId);
+    const payment = await this.paymentRepo.findById(query.paymentId);
     
-    // if (!payment) {
-    //   return null;
-    // }
+    if (!payment) {
+      return null;
+    }
     
-    // return PaymentDTO.fromDomain(payment);
+    return PaymentDTO.fromDomain(payment);
     
     return null;
   }
