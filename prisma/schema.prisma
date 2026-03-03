@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  orderId               String        @unique
+  userId                String
+  
+  stripePaymentIntentId String        @unique
+  stripeCustomerId      String?
+  
+  amount                Decimal       @db.Decimal(10, 2)
+  currency              String        @default("mad")
+  
+  status                PaymentStatus @default(PENDING)
+  paymentMethod         String?
+  lastFourDigits        String?
+  
+  metadata              Json?
+  
+  paidAt                DateTime?
+  failedAt              DateTime?
+  failureReason         String?
+  
+  refunds               Refund[]
+  webhookEvents         WebhookEvent[]
+  
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  
+  @@index([orderId])
+  @@index([userId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+model Refund {
+  id                String       @id @default(uuid())
+  paymentId         String
+  payment           Payment      @relation(fields: [paymentId], references: [id])
+  
+  stripeRefundId    String       @unique
+  amount            Decimal      @db.Decimal(10, 2)
+  currency          String
+  reason            String?
+  status            RefundStatus @default(PENDING)
+  
+  processedAt       DateTime?
+  failedAt          DateTime?
+  failureReason     String?
+  
+  initiatedBy       String?
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  @@index([paymentId])
+  @@index([status])
+  @@map("refunds")
+}
+
+enum RefundStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+model WebhookEvent {
+  id              String   @id @default(uuid())
+  paymentId       String?
+  payment         Payment? @relation(fields: [paymentId], references: [id])
+  
+  stripeEventId   String   @unique
+  eventType       String
+  
+  payload         Json
+  processed       Boolean  @default(false)
+  processingError String?
+  
+  receivedAt      DateTime @default(now())
+  processedAt     DateTime?
+  
+  @@index([stripeEventId])
+  @@index([eventType])
+  @@index([processed])
+  @@index([receivedAt])
+  @@map("webhook_events")
+}
+
+model IdempotencyKey {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  requestHash String
+  response    Json?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  
+  @@index([key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
